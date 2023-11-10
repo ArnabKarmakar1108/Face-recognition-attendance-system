@@ -1,5 +1,4 @@
-
-def camer():
+def check_camera():
     import cv2
 
     # Load the cascade

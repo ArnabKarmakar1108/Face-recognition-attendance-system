@@ -1,70 +1,67 @@
+import streamlit as st
+import time
+import keyboard
 import os
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget
+import psutil
+from check_camera import check_camera
+from Capture_Image import takeImages
+from Train_Image import TrainImages
+import Recognize
+
+# Function to clear terminal screen
+def clear_screen():
+    if os.name == 'nt':
+        os.system('cls')
+    else:
+        os.system('clear')
+
+# Function to display title bar
+def title_bar():
+    clear_screen()
+    st.title("Face Recognition Attendance System 🧑‍💼")
+
+# Function to train images
+def train_images():
+    with st.spinner("Training images... Please wait."):
+        TrainImages()
+    st.success("Images Trained Successfully.")
+
+# Function to recognize faces
+def recognize_faces():
+    Recognize.recognize_attendence()
+
+# Main menu
+def main_menu():
+    title_bar()
+    st.subheader("Welcome Menu")
+
+    # Create a button for each option
+    if st.button("Check Camera"):
+        check_camera()
+
+    # Button to trigger image capture
+    if st.button("Capture Images"):
+        takeImages()
+
+    if st.button("Train Images"):
+        train_images()
+
+    if st.button("Recognize & Attendance"):
+        recognize_faces()
+    
+    if st.button("Quit"):
+        st.warning("Thank You For Using Our Services")
+        st.warning("Shutting down the app...")
+        time.sleep(4)
+        # Close streamlit browser tab
+        keyboard.press_and_release('ctrl+w')
+        # Terminate streamlit python process
+        pid = os.getpid()
+        p = psutil.Process(pid)
+        p.terminate()
+
+# Main driver
+if __name__ == "__main__":
+    main_menu()
 
 
-def checkCamera():
-    os.system('python check_camera.py')
-
-
-def CaptureFaces():
-    os.system('python Capture_Image.py')
-
-
-def Trainimages():
-    os.system('python Train_Image.py')
-
-
-def RecognizeFaces():
-    os.system('python Recognize.py')
-
-
-def autoMail():
-    os.system('python automail.py')
-
-
-class FaceRecognitionApp(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Face Recognition Attendance System")
-        self.setGeometry(100, 100, 400, 300)
-
-        layout = QVBoxLayout()
-
-        label = QLabel("WELCOME MENU")
-        layout.addWidget(label)
-
-        button1 = QPushButton("Check Camera")
-        button1.clicked.connect(checkCamera)
-        layout.addWidget(button1)
-
-        button2 = QPushButton("Capture Faces")
-        button2.clicked.connect(CaptureFaces)
-        layout.addWidget(button2)
-
-        button3 = QPushButton("Train Images")
-        button3.clicked.connect(Trainimages)
-        layout.addWidget(button3)
-
-        button4 = QPushButton("Recognize & Attendance")
-        button4.clicked.connect(RecognizeFaces)
-        layout.addWidget(button4)
-
-        button5 = QPushButton("Auto Mail")
-        button5.clicked.connect(autoMail)
-        layout.addWidget(button5)
-
-        button6 = QPushButton("Quit")
-        button6.clicked.connect(self.close)
-        layout.addWidget(button6)
-
-        widget = QWidget()
-        widget.setLayout(layout)
-        self.setCentralWidget(widget)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = FaceRecognitionApp()
-    window.show()
-    sys.exit(app.exec_())
